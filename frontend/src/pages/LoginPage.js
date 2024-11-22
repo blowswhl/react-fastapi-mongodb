@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import './LoginPage.css'; //스타일추가
 //리액트 코드를 작성할떄 필수적으로 리액트를 가져와야함
 // React 17 이상에서는 자동으로 JSX를 처리하지만, 명시적으로 import React를 사용하는 것이 관례적입니다.
@@ -11,6 +12,7 @@ const LoginPage = () => {
     //set애들이 상태를 실시간으로 전달받아 값을바꿔줌 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     //로그인폼버튼누를시 호출 
     const handleLogin = async (e) => {
@@ -25,10 +27,20 @@ const LoginPage = () => {
                 },
                 body: JSON.stringify({ username, password }),
             });
-
+                //Http 응답 반환을 통해 200대일시 
+                // data에 담긴 팀이 개발 이나 인프라일시 해당페이지이동 
+                //===쓰는이유는 ==일시 형변환일어날수있음 === 두값과 타입까지
+                // '5' == 5 는 5==5 가됨 
             if (response.ok) {
                 const data = await response.json();
                 alert(`로그인 성공: ${data.message}`);
+                if (data.team === '개발') {
+                    navigate('/DevelopMain');
+                
+                } else if (data.team === '인프라') {
+                    navigate('/Inframain');
+                }
+
             } else {
                 const error = await response.json();
                 alert(`로그인 실패: ${error.detail}`);
@@ -55,7 +67,7 @@ const LoginPage = () => {
                 <div className="links">
                 <a href="/find-id">아이디 찾기</a>
                 <a href="/find-password">비밀번호 찾기</a>
-                <a href="/signup">회원가입</a>
+                <a href="/SignUpPage">회원가입</a>
                 </div>
             </div>
 

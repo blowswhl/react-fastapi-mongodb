@@ -12,6 +12,7 @@ class User(Document):
     username: str = Field(..., unique=True)
     hashed_password: str
     email: str
+    team: str = []
     tags: List[str] = []
 
     class Config:
@@ -20,6 +21,7 @@ class User(Document):
                 "username": "admin",
                 "password": "1234",
                 "email": "admin@exaample.com",
+                "team": "인프라팀",
                 "tags": ["admin", "user"]
             }
         }
@@ -43,4 +45,5 @@ class LoginRequest(BaseModel):
 class RegisterRequest(BaseModel):
     username: str
     password: str
-    email: str 
+    email: str
+    team: str

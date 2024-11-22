@@ -16,17 +16,25 @@ users= {}
 #몽고 db에서 특정사용자를 찾는 역할 await User.find_one
 #user가 user패스워드 일치하는지 검증 
 #로그인 라우터
+# 모든 사용자 목록 조회
+@user_router.get("/users")
+async def get_users():
+    users = await User.find_all().to_list()  # MongoDB에서 모든 사용자 조회
+    return {"users": users}
+
 @user_router.post("/login")
 async def login(request: LoginRequest):
     user = await User.find_one(User.username == request.username)
     if user and user.verify_password(request.password):
-        return {"message": "로그인 성공!"}
+        return {"message": "로그인 성공!", "team": user.team}
     raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 올바르지 않습니다.")
 
 #회원가입 라우터 username을기준으로
 
 @user_router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(request: RegisterRequest):
+    print(request.dict())
+    print(request.team)
     # 사용자 이름 중복 확인
     existing_user = await User.find_one(User.username == request.username)
     if existing_user:
@@ -38,10 +46,13 @@ async def register(request: RegisterRequest):
         raise HTTPException(status_code=400, detail="Email already exists")
     
     # 사용자 생성 및 비밀번호 해싱
+   
     user = User(
         username=request.username,
         email=request.email,
-        hashed_password=""  # 초기값 설정
+        hashed_password="",  # 초기값 설정
+        team=request.team,
+        
     )
     await user.set_password(request.password)  # 비밀번호 해싱
     await user.insert()  # MongoDB에 저장
