@@ -43,21 +43,22 @@
     background-color: #0056b3;      /* 호버 시 배경색 */
   }
   
-
-  /* 링크 스타일 */
+/* 링크 스타일 */
 .links {
-    margin-top: 20px;              /* 로그인 폼과 간격 */
-    text-align: center;            /* 가운데 정렬 */
-  }
-  
-  .links a {
-    margin: 0 10px;                /* 링크 간격 */
-    color: #007bff;                /* 링크 색상 */
-    text-decoration: none;         /* 밑줄 제거 */
-    font-size: 14px;               /* 글씨 크기 */
-    cursor: pointer;               /* 마우스 커서 변경 */
-  }
-  
-  .links a:hover {
-    text-decoration: underline;    /* 호버 시 밑줄 표시 */
-  }
+  margin-top: 20px;              /* 로그인 폼과 간격 */
+  text-align: center;            /* 가운데 정렬 */
+  display: flex;                 /* Flexbox 사용 */
+  justify-content: center;       /* 링크들을 가로로 정렬 */
+  gap: 10px;                     /* 링크 간의 간격 */
+}
+
+.links a {
+  color: #007bff;                /* 링크 색상 */
+  text-decoration: none;         /* 밑줄 제거 */
+  font-size: 14px;               /* 글씨 크기 */
+  cursor: pointer;               /* 마우스 커서 변경 */
+}
+
+.links a:hover {
+  text-decoration: underline;    /* 호버 시 밑줄 표시 */
+}

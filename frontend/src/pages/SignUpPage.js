@@ -11,9 +11,10 @@ const SignUpPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
         const userData = { username, password, email, team: selectedTeam };
         try {
-            const response = await fetch("http://localhost:8000/register", {
+            const response = await fetch(`${backendUrl}/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

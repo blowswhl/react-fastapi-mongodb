@@ -19,13 +19,20 @@ const LoginPage = () => {
         e.preventDefault(); // 폼 제출 기본 동작 방지
 
         try {
+            const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
             //백엔드 fastapi서버로 요청을보냄 json형식으로 보냄 
-            const response = await fetch('http://localhost:8000/login', {
+                // Form 데이터를 URL 인코딩 형식으로 변환
+            const formData = new URLSearchParams();
+            formData.append('username', username);
+            formData.append('password', password);
+
+            const response = await fetch(`${backendUrl}/login`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: JSON.stringify({ username, password }),
+                body: formData.toString(),
+                credentials: 'include',  // 쿠키를 포함한 요청을 허용
             });
                 //Http 응답 반환을 통해 200대일시 
                 // data에 담긴 팀이 개발 이나 인프라일시 해당페이지이동 

@@ -1,5 +1,9 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends, Response, Request
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from models.users     import User
 from models.users import User,LoginRequest, RegisterRequest
+from jose import jwt, JWTError, ExpiredSignatureError
+from models.jwt_handler import create_access_token,verify_access_toekn
 
 user_router = APIRouter(
     tags=["User"],
@@ -23,14 +27,29 @@ async def get_users():
     return {"users": users}
 
 @user_router.post("/login")
-async def login(request: LoginRequest):
+async def login(request: OAuth2PasswordRequestForm = Depends(), response: Response = None):
     user = await User.find_one(User.username == request.username)
     if user and user.verify_password(request.password):
-        return {"message": "로그인 성공!", "team": user.team}
-    raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 올바르지 않습니다.")
-
+        access_token: str = create_access_token(user.username)
+        
+        # 로그인 성공 시, 쿠키에 JWT 토큰 저장
+        response.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=True,  # JavaScript에서 접근 불가
+            secure=False,    # HTTPS에서만 쿠키 전송 (배포 환경에서는 True 설정)     # 만료시간
+            path="/"        # 쿠키가 적용되는 경로
+        )
+        
+        # 응답 본문에 사용자 정보 반환
+        return {
+             "message": f"로그인 성공! {access_token}",
+            "team": user.team
+        }
+    else:
+        raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 올바르지 않습니다.")
+  
 #회원가입 라우터 username을기준으로
-
 @user_router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(request: RegisterRequest):
     print(request.dict())
@@ -46,7 +65,6 @@ async def register(request: RegisterRequest):
         raise HTTPException(status_code=400, detail="Email already exists")
     
     # 사용자 생성 및 비밀번호 해싱
-   
     user = User(
         username=request.username,
         email=request.email,
@@ -58,3 +76,31 @@ async def register(request: RegisterRequest):
     await user.insert()  # MongoDB에 저장
     
     return {"message": "User registered successfully"}
+
+@user_router.get("/api/verify-token")
+async def verify_token(request: Request):
+    token = request.cookies.get("access_token")
+    print("Received token:", token)
+    if not token:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    try:
+        user_data = verify_access_toekn(token)
+        if user_data is None:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    print("Token is valid")  # 로그 출력
+    return {"message": "Token is valid", "user_data": user_data}
+
+
+#서버에서 토큰검증
+
+
+#회원정보 수정 만들어야함 
+
+
+#회원탈퇴 만들어야함 
