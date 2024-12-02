@@ -40,6 +40,7 @@ const LoginPage = () => {
                 // '5' == 5 는 5==5 가됨 
             if (response.ok) {
                 const data = await response.json();
+                
                 alert(`로그인 성공: ${data.message}`);
                 if (data.team === '개발') {
                     navigate('/DevelopMain');
@@ -62,7 +63,7 @@ const LoginPage = () => {
     return (
         <div className='login-container'>
          <div className='login-box'>
-            <h1>로그인 페이지</h1>
+            <h1>로그인 페이지!</h1>
             <form onSubmit={handleLogin}>
                 <input type="text" placeholder="아이디"  value={username}
         onChange={(e) => setUsername(e.target.value)} />

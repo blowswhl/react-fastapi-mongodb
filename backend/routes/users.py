@@ -77,6 +77,9 @@ async def register(request: RegisterRequest):
     
     return {"message": "User registered successfully"}
 
+
+
+
 @user_router.get("/api/verify-token")
 async def verify_token(request: Request):
     token = request.cookies.get("access_token")

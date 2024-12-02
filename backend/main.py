@@ -3,6 +3,7 @@ from fastapi import HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from routes.users import user_router
 from routes.Notice import notice_router
+from routes.DevNotice import Dev_notice_router
 from database.connection import Settings
 
 app = FastAPI()
@@ -31,3 +32,4 @@ async def welcome() -> dict:
 
 app.include_router(user_router)
 app.include_router(notice_router)
+app.include_router(Dev_notice_router)
